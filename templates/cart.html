@@ -1,0 +1,177 @@
+{% extends "base.html" %} {% block title %}Specialized | Cart{% endblock %} {% block content %}
+
+<div class="container">
+    <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">Image</th>
+            <th scope="col">Title</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Price Per Item</th>
+            <th scope="col">Price</th>
+            <th scope="col">Misc</th>
+          </tr>
+        </thead>
+        <tbody id="table_body">
+        </tbody>
+      </table>
+</div>
+
+<script>
+$(document).ready(function() {
+    setTimeout(get_cart, 1000);
+});
+
+var cart = [];
+
+function get_cart(){
+    $.getJSON({
+        url: "/getCart",
+        data: {
+            username: _GLOBAL_USERNAME
+        },
+        success: function(data) {
+            cart = data.cart_items
+            for (i = 0; i < data.cart_items.length; i++){
+                var tr = document.createElement('tr')
+
+                var image = document.createElement('td')
+                var image_body = document.createElement('img')
+                image_body.setAttribute('src', data.cart_items[i][0])
+                image_body.setAttribute('width', "150px")
+                image.appendChild(image_body)
+
+                var title = document.createElement('td')
+                var title_textnode = document.createTextNode(data.cart_items[i][1])
+                title.appendChild(title_textnode)
+
+                var quantity = document.createElement('td')
+                var quantity_body = document.createElement('input')
+                quantity_body.setAttribute('type', 'number')
+                quantity_body.setAttribute('id', "quantity" + i)
+                quantity_body.value = data.cart_items[i][2]
+                quantity.appendChild(quantity_body)
+
+                var pricePer = document.createElement('td')
+                var pricePer_textnode = document.createTextNode("S$" + data.cart_items[i][4])
+                pricePer.setAttribute('id', "pricePer" + i)
+                pricePer.appendChild(pricePer_textnode)
+
+                var price = document.createElement('td')
+                var price_textnode = document.createTextNode("S$" + data.cart_items[i][3])
+                price.setAttribute('id', "price" + i)
+                price.appendChild(price_textnode)
+
+                var btn_body = document.createElement('td')
+                var btn_delete = document.createElement('button')
+                btn_delete.setAttribute('class', 'btn btn-danger')
+                btn_delete.setAttribute('onclick', "removeFromCart('" + data.cart_items[i][5] + "')")
+                btn_delete.innerText = "X"
+                var btn_update = document.createElement('button')
+                btn_update.setAttribute('class', 'btn btn-secondary')
+                btn_update.setAttribute('onclick', "updateCart(['quantity" + i +"', 'pricePer" + i + "', 'price" + i +"'], " + i +")" )
+                // btn_update.setAttribute('onclick', "updateCart(document.getElementById('quantity" + i + "').value), updateCart(document.getElementById('pricePer" + i + "').innerText), updateCart(document.getElementById('price" + i + "').innerText)")
+                btn_update.innerText = "Update"
+                btn_body.appendChild(btn_update)
+                btn_body.appendChild(btn_delete)
+
+                tr.appendChild(image)
+                tr.appendChild(title)
+                tr.appendChild(quantity)
+                tr.appendChild(pricePer)
+                tr.appendChild(price)
+                tr.appendChild(btn_body)
+                
+                document.getElementById("table_body").appendChild(tr);
+            }
+            var tr = document.createElement('tr')
+            var checkout_body = document.createElement('td')
+            checkout_body.setAttribute('colspan', '6')
+            checkout_body.setAttribute('style', 'text-align: right;')
+            var checkout = document.createElement('button')
+            checkout.setAttribute('class', 'btn btn-primary')
+            checkout.setAttribute('onclick', 'checkout()')
+            checkout.innerText = "Checkout"
+            var totalPrice_node = document.createElement('h4')
+            totalPrice_node.setAttribute('id', 'totalPrice')
+            totalPrice_node.innerText = "0"
+            checkout_body.appendChild(totalPrice_node)
+            checkout_body.appendChild(checkout)
+            tr.appendChild(checkout_body)
+            document.getElementById("table_body").appendChild(tr);
+
+            generate_totalPrice();
+        }
+    });
+}
+
+function removeFromCart(productID){
+    var r = confirm("Remove item from cart?")
+    if(r == true){
+        $.getJSON({
+            url: "/removeFromCart",
+            data: {
+                username: _GLOBAL_USERNAME,
+                product_id: productID
+            },
+            success: function(data) {
+                window.location.reload()
+            }
+        });
+    }
+}
+
+function checkout(){
+    $.getJSON({
+        url: "/processCheckout",
+        data: {
+            username: _GLOBAL_USERNAME,
+            cart: JSON.stringify(cart)
+        },
+        success: function(data) {
+            if(data.response[1] == 200){
+                window.location.href = "/checkout?username=" + data.response[0]
+            }
+            else{
+                alert("Something went wrong")
+            }
+        }
+    });
+}
+
+function updateCart(set, index){
+    //0 quantity
+    //1 priceper
+    //2 price
+    var e_quantity = document.getElementById(set[0])
+    var e_pricePer = document.getElementById(set[1])
+    var e_price = document.getElementById(set[2])
+
+    e_pricePer = e_pricePer.innerText
+    pricePer = parseFloat(e_pricePer.replace("S$", ""))
+
+    e_price = e_price.innerText
+    price = parseFloat(e_price.replace("S$", ""))
+
+    quantity = parseInt(e_quantity.value)
+
+    price = pricePer * quantity
+
+    cart[index][3] = price
+    cart[index][2] = quantity
+
+    document.getElementById(set[2]).innerText = "S$" + price
+    generate_totalPrice()
+}
+
+function generate_totalPrice(){
+    var totalPrice = 0
+    for (let i = 0; i < cart.length; i++) {
+        totalPrice = totalPrice + parseFloat(cart[i][3])
+    }
+    document.getElementById('totalPrice').innerText = "Total Price: S$" + totalPrice
+}
+
+</script>
+
+{% endblock %}

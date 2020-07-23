@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Specialized | Manage Transaction{% endblock %}
+{% block content %}
+
+<div class="container">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" data-toggle="tab" href="#changeStatus">Change Status</a>
+      </li>
+    </ul>
+  
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div id="changeStatus" class="container tab-pane active"><br>
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope='col'>Select</th>
+                    <th scope='col'>User ID</th>
+                    <th scope='col'>Transaction ID</th>
+                    <th scope='col'>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for i in range(0, lengthOfTransactions)%}
+                    <tr>
+                        <td><input type="checkbox" onclick="check(this, '{{transactions[i][0]}}', '{{transactions[i][1]}}');"></td>
+                        <td>{{transactions[i][0]}}</td>
+                        <td>{{transactions[i][1]}}</td>
+                        <td>{{transactions[i][2]}}</td>
+                    </tr>
+                {%endfor%}
+                <tr>
+                    <td colspan="4" style="text-align: right;"><button class='btn btn-primary' onclick="changeStatus();">Change Status</button></td>
+                </tr>
+            </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+      var changeStatusSelection = []
+
+      function check(checkbox, userID, transactionID){
+          if(checkbox.checked == true){
+              changeStatusSelection.push(transactionID)
+          }
+          else{
+              index = changeStatusSelection.indexOf(transactionID);
+              changeStatusSelection.splice(index,1)
+          }
+      }
+      
+      function changeStatus(){
+        var status = prompt("Enter Status:")
+        $.getJSON({
+        url: "/changeStatus",
+        data: {
+            transactionIDs: JSON.stringify(changeStatusSelection),
+            status: status
+        },
+        success: function(data) {
+          alert(data.response)
+          window.location.href = "/manageTransactions"
+        }
+        });
+      }
+  </script>
+{% endblock %}

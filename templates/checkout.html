@@ -1,0 +1,247 @@
+{% extends "base.html" %} {% block title %}Specialized | Checkout{% endblock %} {% block content %}
+{% from "includes/_formhelper.html" import render_field %}
+
+<style>
+    .col-lg-7 {
+        flex: none;
+        max-width: 100%;
+    }
+</style>
+
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            Date:
+            <strong>{{date}}</strong>
+            <span class="float-right"> <strong>Status:</strong> Pending</span>
+
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+
+                <div class="col-sm-6">
+                    <h6 class="mb-3">To:</h6>
+                    <div>
+                        <strong>{{name}}</strong>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="table-responsive-sm">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="center">#</th>
+                            <th>Item</th>
+                            <th class="right">Price Per Item</th>
+                            <th class="center">Qty</th>
+                            <th class="right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table_body">
+                    </tbody>
+                </table>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-sm-5">
+
+                </div>
+
+                <div class="col-lg-4 col-sm-5 ml-auto">
+                    <table class="table table-clear">
+                        <tbody>
+                            <tr>
+                                <td class="left">
+                                    <strong>Subtotal</strong>
+                                </td>
+                                <td class="right" id="subtotal"></td>
+                            </tr>
+                            <tr>
+                                <td class="left">
+                                    <strong>GST (7%)</strong>
+                                </td>
+                                <td class="right" id="gst"></td>
+                            </tr>
+                            <tr>
+                                <td class="left">
+                                    <strong>Total</strong>
+                                </td>
+                                <td class="right">
+                                    <strong id="totalprice"></strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="right">
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#paymentgateway">
+                                        Payment
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="paymentgateway" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Payment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-7 mx-auto">
+                        <div class="bg-white rounded-lg shadow-sm p-5">
+                            <!-- Credit card form tabs -->
+                            <ul role="tablist" class="nav bg-light nav-pills rounded-pill nav-fill mb-3">
+                                <li class="nav-item">
+                                    <a data-toggle="pill" href="#nav-tab-card" class="nav-link active rounded-pill">
+                                        <i class="fa fa-credit-card"></i> Credit Card
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a data-toggle="pill" href="#nav-tab-paypal" class="nav-link rounded-pill">
+                                        <i class="fa fa-paypal"></i> Paypal
+                                    </a>
+                                </li>
+                            </ul>
+                            <!-- End -->
+
+                            <!-- Credit card form content -->
+                            <div class="tab-content">
+
+                                <!-- credit card info-->
+                                <div id="nav-tab-card" class="tab-pane fade show active">
+                                    <form role="form" method="POST" action="" name="paymentForm" onsubmit="return validatePaymentForm()">
+                                        <div class="form-group">
+                                            <!-- <input type="text" name="username" placeholder="Jason Doe" required class="form-control"> -->
+                                            {{ render_field(form.fullName, placeholder="Jason Doe", class="form-control") }}
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="cardNumber">Card number</label>
+                                            <div class="input-group">
+                                                <!-- <input type="text" name="cardNumber" placeholder="Your card number" class="form-control" required> -->
+                                                {{ render_field(form.cardnumber, placeholder="Your card number", class="form-control", id="cardNumber", onKeyUp="return cardOnChange()") }}
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">
+                                                        <i class="fa fa-cc-visa mx-1" id="cardThumb"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-8">
+                                                <div class="form-group">
+                                                    <label><span class="hidden-xs">Expiration</span></label>
+                                                    <div class="input-group">
+                                                        {{ render_field(form.exp_month, placeholder="MM", class="form-control") }}
+                                                        {{ render_field(form.exp_year, placeholder="YY", class="form-control") }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div class="form-group mb-4">
+                                                    <label data-toggle="tooltip" title="Three-digits code on the back of your card">CVV
+                                                        <i class="fa fa-question-circle"></i>
+                                                    </label>
+                                                    {{ render_field(form.cvv, class="form-control", id="cvv") }}
+                                                    <!-- <input type="text" required class="form-control"> -->
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <button type="submit" value="Submit" class="subscribe btn btn-primary btn-block rounded-pill shadow-sm"> Confirm </button>
+                                    </form>
+                                </div>
+                                <!-- End -->
+
+                                <!-- Paypal info -->
+                                <div id="nav-tab-paypal" class="tab-pane fade">
+                                    <p>Paypal is easiest way to pay online</p>
+                                        <button type="button" class="btn btn-primary rounded-pill"><i class="fa fa-paypal mr-2"></i> Log into my Paypal</button>
+
+                                </div>
+                                <!-- End -->
+
+                            </div>
+                            <!-- End -->
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <p>Payments are secured by encryption.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var mapping = {{items | tojson}}
+    const keys = Object.keys(mapping)
+
+    var subTotal = 0
+
+    for (let i = 0; i < keys.length; i++) {
+        subTotal = subTotal + parseFloat(mapping[keys[i]][1])
+        var perPrice = parseFloat(mapping[keys[i]][1]) / parseInt(mapping[keys[i]][2])
+        var tr = document.createElement('tr')
+        tr.innerHTML = "<td class='center'>" + mapping[keys[i]][0] + "</td> <td class='left strong'>" + keys[i] + "</td> <td class='right'>S$" + perPrice + "</td> <td class='center'>" + mapping[keys[i]][2] + "</td> <td class='right'>S$" + mapping[keys[i]][1] + "</td>"
+        document.getElementById('table_body').appendChild(tr)
+    }
+
+    document.getElementById('subtotal').innerText = "S$" + subTotal
+    var gst = Math.round((subTotal * 0.07) * 100 / 100)
+    document.getElementById('gst').innerText = "S$" + gst
+    document.getElementById('totalprice').innerText = "S$" + (subTotal + gst)
+
+    document.getElementById('exp_month').setAttribute('type', 'number')
+    document.getElementById('exp_year').setAttribute('type', 'number')
+
+function cardOnChange(){
+    var cardNum = document.getElementById('cardNumber').value
+    var cardThumb = document.getElementById('cardThumb')
+    
+    if(cardNum.substring(0, 1) == '5'){
+        cardThumb.innerText = "MasterCard"
+    }
+    else if (cardNum.substring(0, 1) == '4'){
+        cardThumb.innerText = "Visa"
+    }
+    else{
+        cardThumb.innerText = "Invalid Card"
+    }
+}
+
+function validatePaymentForm(){
+    var fields = [document.getElementById('cardNumber').value,document.getElementById('cvv').value,cardThumb = document.getElementById('cardThumb').innerText]
+    if (fields[2] == "MasterCard" || fields[2] == "Visa"){
+        if (fields[1].length == 3){
+            return true
+        }
+        else{
+            alert("CVV Must be 3 digits!")
+            return false
+        }
+    }
+    else{
+        alert("Invalid Card Number!")
+        return false
+    }
+    
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,69 @@
+#homeBanner{
+    height: 94vh !important;
+}
+
+#homeBanner .container{
+    text-align: center !important;
+}
+
+#homeBanner #bannerImage{
+    /* border: 1px solid black; */
+    height: 600px;
+    max-width: 970000px;
+}
+
+.card{
+    border: none;
+}
+
+#quickProducts{
+    max-width: 70% !important;
+}
+
+@media (min-width: 768px) {
+    .h-md-100 { height: 100vh; }
+}
+.btn-round { border-radius: 30px; }
+.bg-indigo { background: indigo; }
+.text-cyan { color: #35bdff; }
+
+#productImageContainerVP{
+    background-color: #f2f2f2;
+    width: 650px !important;
+    height: 700px;
+    padding: 30px;
+}
+
+#productImageContainerVP .container{
+    background-color: gray;
+    top: 20% !important;
+    /* border: 1px solid black; */
+    width: 100% !important;
+    height: 100% !important;
+}
+
+#carousel{
+    max-width: 100% !important;
+}
+
+#productDescription-box{
+    background-color: #f1f1f1;
+    max-width: 100% !important;
+    /* height: 400px !important; */
+}
+
+#productSpecs-box{
+    background-color: #414141;
+    max-width: 100% !important;
+}
+
+#categories{
+    background-color: #414141;
+    max-width: 100% !important;
+    padding: 30px;
+    text-align: center;
+}
+
+.btn-group-lg>.btn, .btn-lg{
+    margin-right: 10px;
+}

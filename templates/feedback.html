@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Specialized | Feedback{% endblock %}
+{% block content %}
+{% from "includes/_formhelper.html" import render_field %}
+
+<div class="container">
+    <div class="innercontainer">
+        <h1 class="display-4">Feedback</h1>
+        <form method="POST" action="" name="myForm" onsubmit="return validateForm()">
+        <div class="form-group">
+        {{ render_field(form.fullName, class="form-control", id="fullname") }}
+        </div>
+        <div class="form-group">
+        {{ render_field(form.userName, class="form-control", id="username") }}
+        </div>
+        <div class="form-group">
+        {{ render_field(form.email, class="form-control", id="email") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.message, class="form-control", id="message") }}
+        </div>
+        <input type="submit" value="Submit" class="btn btn-primary"/>
+        </form>
+    </div>
+</div>
+
+<script>
+function validateForm() {
+  var fields = [document.getElementById('fullname').value,document.getElementById('username').value, document.getElementById('email').value, document.getElementById('message').value]
+  if(fields[0] == "" || fields[1] == "" || fields[2] == "" || fields[3] == ""){
+      alert("All fields must be filled out!")
+      return false;
+  }
+  else{
+      if(fields[3].length > 10 && fields[3].length < 500){
+        return true;
+      }
+      else{
+          alert("Message must be between 10 and 500 words long!")
+          return false;
+      }
+  }
+}
+</script>
+
+{% endblock %}

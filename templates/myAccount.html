@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% block title %}Specialized | My Account{% endblock %}
+{% block content %}
+{% from "includes/_formhelper.html" import render_field %}
+
+<div class="container">
+    <h2>My Account</h2>
+    <br>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" data-toggle="tab" href="#settings">Settings</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#myOrders">My Orders</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#redeemCoupons">Redeem Coupons</a>
+      </li>
+    </ul>
+  
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div id="settings" class="container tab-pane active"><br>
+        <form method="POST" action="">
+            <div class="form-group">
+            {{ render_field(form.userName, class="form-control", id="currentUsername") }}
+            </div>
+            <div class="form-group">
+            {{ render_field(form.oldPassword, class="form-control", id="oldPassword") }}
+            </div>
+            <div class="form-group">
+            {{ render_field(form.newPassword, class="form-control") }}
+            </div>
+            <input type="submit" value="Change Password" class="btn btn-primary"/>
+        </form>
+      </div>
+      <div id="myOrders" class="container tab-pane fade"><br>
+
+      </div>
+      <div id="redeemCoupons" class="container tab-pane fade"><br>
+        <h3>My Rewards</h3>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+                <th>Reward Name</th>
+                <th>Reward Incentive (S$ Off)</th>
+                <th>Quantity</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for i in gainlist %}
+              <tr>
+                <td>{{i.get_rewardName()}}</td>
+                <td>{{i.get_incentive()}}</td>
+                <td>{{i.get_quantity()}}</td>
+              </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+
+        <br>
+        <h3>Available To Claim Rewards</h3>
+          <h4 style="float:right">Current Points:{{points}}</h4>
+<table class="table table-striped">
+                     <thead>
+                 <tr>
+                 <th>Reward ID</th>
+                 <th>Reward Name</th>
+                 <th>Reward Incentive (S$ Off)</th>
+                 <th>Points Required</th>
+                 <th>Quantity</th>
+                 <th>Status</th>
+                 </tr>
+                 </thead>
+                 <tbody>
+                 {% for reward in rewardsList %}
+                 <tr>
+                 <td>{{reward.get_rewardID()}}</td>
+                 <td>{{reward.get_rewardName()}}</td>
+                 <td>{{reward.get_incentive()}}</td>
+                 <td>{{reward.get_points()}}</td>
+                 <td>{{reward.get_quantity()}}</td>
+                 <td>
+                     <form action="/redeemReward/{{reward.get_rewardID()}}&{{userID}}" method="POST">
+                     <input type="submit" value="Redeem" onclick="return confirm('Are you sure you want to redeem this reward?');">
+                 </form>
+                 </td>
+
+
+                 </tr>
+                 {% endfor %}
+                 </tbody>
+             </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="trackOrderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Order Status</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="trackOrderModalBody">
+          ...
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+<script>
+
+$(document).ready(function() {
+    setTimeout(get_password, 1000);
+    setTimeout(get_myorders, 1000);
+});
+
+function get_password(){
+    $.getJSON({
+        url: "/myAccountSettings",
+        data: {
+            option: "getPassword",
+            username: _GLOBAL_USERNAME,
+        },
+        success: function(data) {
+            oldPassword = document.getElementById('oldPassword')
+            currentUsername = document.getElementById('currentUsername')
+            currentUsername.value = _GLOBAL_USERNAME
+            currentUsername.disabled = true
+
+            oldPassword.value = data.current_password
+            oldPassword.disabled = true
+        }
+    });
+}
+
+function get_myorders(){
+  $.getJSON({
+        url: "/myAccountSettings",
+        data: {
+            option: "getMyOrders",
+            username: _GLOBAL_USERNAME,
+        },
+        success: function(data) {
+            if(data.orders != "nothing"){
+              myOrders = document.getElementById('myOrders')
+              orders = data.orders
+              const keys = Object.keys(orders)
+              
+              myOrdersTable = "<table class='table'><thead class='thead-dark'><tr><th scope='col'>Date</th><th scope='col'>#</th><th scope='col'>Transaction ID</th><th scope='col'>Title</th><th scope='col'>Quantity</th><th scope='col'>Total Price</th><th scope='col'>Misc</th></tr></thead><tbody>"
+              
+              for (let i = 0; i < keys.length; i++) {
+                
+                if(orders[keys[i]].length == 1){
+                  myOrdersTable = myOrdersTable.concat("<tr id='row' >")
+                    myOrdersTable = myOrdersTable.concat("<th scope='row'>" + keys[i] + "</th><td>" + orders[keys[i]][0][1] + "</td><td>" + orders[keys[i]][0][4] +"</td><td>" + orders[keys[i]][0][0] + "</td><td>" + orders[keys[i]][0][2] + "</td><td>S$" + orders[keys[i]][0][3] + "</td><td><button class='btn btn-primary' data-toggle='modal' data-target='#trackOrderModal' ")
+                    myOrdersTable = myOrdersTable.concat("onclick = \"track('" + orders[keys[i]][0][4] + "')\" >Track This Order</button></td></tr>")
+                    myOrdersTable = myOrdersTable.concat("</tr>")
+                }
+                else{
+                  for (let x = 0; x < orders[keys[i]].length; x++){
+                    myOrdersTable = myOrdersTable.concat("<tr id='row' style='background-color:#e3e3e3;'>")
+                    myOrdersTable = myOrdersTable.concat("<th scope='row'>" + keys[i] + "</th><td>" + orders[keys[i]][x][1] + "</td><td>" + orders[keys[i]][x][4] +"</td><td>" + orders[keys[i]][x][0] + "</td><td>" + orders[keys[i]][x][2] + "</td><td>S$" + orders[keys[i]][x][3] + "</td><td><button class='btn btn-primary' data-toggle='modal' data-target='#trackOrderModal' ")
+                    myOrdersTable = myOrdersTable.concat("onclick = \"track('" + orders[keys[i]][x][4] + "')\" >Track This Order</button></td></tr>")
+                    myOrdersTable = myOrdersTable.concat("</tr>")
+                  }
+                }
+                
+              }
+
+              myOrdersTable = myOrdersTable.concat("</tbody></table>")
+              myOrders.innerHTML = myOrdersTable
+
+            }
+            else{
+              myOrders = document.getElementById('myOrders')
+              myOrders.innerHTML = "<h4>You have bought nothing!</h4>"
+            }
+        }
+    });
+}
+
+function track(transactionID){
+  $.getJSON({
+        url: "/trackOrder",
+        data: {
+            username: _GLOBAL_USERNAME,
+            transactionID: transactionID
+        },
+        success: function(data) {
+          modalBody = document.getElementById('trackOrderModalBody')
+          modalBodyData = "<table class='table'><thead class='thead-dark'><tr><th scope='col'>Date</th><th scope='col'>Status</th></tr></thead><tbody>"
+          const keys = Object.keys(data.orderStatus);
+
+          for (let i = 0; i < keys.length; i++) {
+            modalBodyData = modalBodyData.concat("<tr> <th scope='row'>" + keys[i] + "</th> <td>" + data.orderStatus[keys[i]] + "</td> </tr>")
+          }
+          modalBodyData = modalBodyData.concat("</tbody></table>")
+
+          modalBody.innerHTML = modalBodyData
+        }
+    });
+}
+
+function redeem(id){
+    console.log(id)
+}
+
+</script>
+
+
+{% endblock %}

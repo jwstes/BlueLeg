@@ -1,0 +1,63 @@
+{% extends "base.html" %} {% block title %}Specialized | Supplier Add Stocks{% endblock %} {% block content %}
+
+<div class="container">
+    <h4>{{supplierName}}</h4>
+    <p id="supplierID">{{supplierID}}</p>
+    <hr />
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Product ID</th>
+                <th scope="col">Quantity</th>
+            </tr>
+        </thead>
+        <tbody id="table-body">
+
+        </tbody>
+    </table>
+</div>
+
+<script>
+var mapping = {{ supplierItems | tojson }}
+const keys = Object.keys(mapping);
+
+setTimeout(loadSupplierStocks, 500)
+
+var itemCount = 0
+
+function loadSupplierStocks(){
+    
+    var tableIndexHTML = ""
+
+    for (let i = 0; i < keys.length; i++) {
+        tableIndexHTML = tableIndexHTML.concat("<tr><td>" + keys[i] +"</td><td><input type='number' id='quantity" + i + "' min='1' value='" + mapping[keys[i]] + "'></td></tr>")
+        itemCount++;
+    }
+    tableIndexHTML = tableIndexHTML.concat("<tr><td><button class='btn btn-primary' onclick='update()'>Update Stocks</button></td></tr>")
+    document.getElementById('table-body').innerHTML = tableIndexHTML
+}
+
+function update(){
+    var items = []
+    for (let i = 0; i < itemCount; i++) {
+        items.push([keys[i], parseInt(document.getElementById('quantity' + i).value)])
+    }
+    
+    $.getJSON({
+    url: "/updateSupplierStocks",
+      data: {
+          supplierID: document.getElementById('supplierID').innerText,
+          items: JSON.stringify(items)
+      },
+    success: function(data) {
+        if (data.response == 200){
+            window.location.href = "/adminCP"
+        }
+    }
+  });
+
+}
+
+</script>
+
+{% endblock %}

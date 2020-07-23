@@ -1,0 +1,55 @@
+{% extends "base.html" %} {% block title %}Specialized | Thank You {% endblock %} {% block content %}
+<style>
+    #desc_container {
+        margin-top:25px;
+        padding:10px;
+    }
+    
+    #btn {
+        background-color: rgba(0, 0, 0, 0.3);
+        border: none;
+        border-radius: 0%;
+        margin-top: 10px;
+        margin-left: 13px
+    }
+    
+    #btn:hover {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+</style>
+
+<div class="container" id="desc_container">
+    <div class="jumbotron jumbotron-fluid" style="height: 100% !important">
+        <div class="container">
+            <center>
+                <h1 class="display-4">Thank You For Purchasing</h1>
+                <div>
+                    <p id="delayMsg"></p>
+                </div>
+            </center>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+$(document).ready(function() {
+    setInterval(delayedRedirect, 1000);
+});
+
+var count = 5
+var delayMsg = document.getElementById('delayMsg')
+
+function delayedRedirect(){
+    if(count > 0){
+        delayMsg.innerText = "You will be redirected to the homepage in " + count + " seconds."
+        count--
+    }
+    else{
+        window.location.href = "/"
+    }
+}
+
+</script>
+
+{% endblock %}

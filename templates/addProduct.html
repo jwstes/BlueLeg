@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Specialized | Add Product{% endblock %}
+{% block content %}
+{% from "includes/_formhelper.html" import render_field %}
+
+<style>
+        .container{
+            padding: 30%,0,30%,0;
+            padding-top:100px;
+            align-content:center;
+        }
+        .innercontainer{
+          margin: auto;
+          width: 50%;
+          border: 3px solid black;
+          padding: 10px;
+        }
+        </style>
+
+<div class="container">
+{% with messages = get_flashed_messages() %}
+   {% if messages %}
+      {% for message in messages %}
+         <script>alert('{{message}}')</script>
+      {% endfor %}
+   {% endif %}
+{% endwith %}
+    <div class="innercontainer">
+        <h1 class="display-4">Add Product</h1>
+        <form method="POST" action="">
+        <div class="form-group">
+        {{ render_field(form.title, class="form-control") }}
+        </div>
+        <div class="form-group">
+        {{ render_field(form.description, class="form-control") }}
+        </div>
+        <div class="form-group">
+        {{ render_field(form.price, class="form-control") }}
+        </div>
+        <div class="form-group">
+        {{ render_field(form.thumbnail, class="form-control") }}
+        </div>
+        <div class="form-group">
+        {{ render_field(form.slideshow1, class="form-control") }}
+        </div>
+        <div class="form-group">
+        {{ render_field(form.slideshow2, class="form-control") }}
+        </div>
+        <div class="form-group">
+        {{ render_field(form.slideshow3, class="form-control") }}
+        </div>
+        <div class="form-group">
+        {{ render_field(form.category, class="form-control") }}
+        </div>
+        <input type="submit" value="Submit" class="btn btn-primary"/>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

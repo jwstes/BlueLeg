@@ -1,0 +1,174 @@
+{% extends "base.html" %} {% block title %}Specialized | Store{% endblock %} {% block content %}
+<style>
+    body {
+        background-color: #f7f7f7;
+    }
+</style>
+<div class="container">
+	<div style="text-align: center;">
+	<h4>Sort by Category</h4>
+	<div class="btn-group" role="group" aria-label="Basic example">
+		<button type="button" class="btn btn-secondary" onclick="all_only()">All</button>
+		<button type="button" class="btn btn-secondary" onclick="framesets_only()">Framesets</button>
+		<button type="button" class="btn btn-secondary" onclick="saddles_only()">Saddles</button>
+		<button type="button" class="btn btn-secondary" onclick="helmets_only()">Helmets</button>
+		<button type="button" class="btn btn-secondary" onclick="wheels_only()">Wheels</button>
+	</div>
+	</div>
+    <hr />
+
+    <div class="card-columns" style="column-count: 2;" id="framesets">
+        {% for x in range(lengthFramesets) %} 
+        {% set img = framesets[x][4][0] %} 
+        {% set title = framesets[x][0] %} 
+        {% set price = framesets[x][2] %} 
+        {% set stock = framesets[x][3] %}
+        {% set productID = framesets[x][5] %}
+        {% set id = x %}
+        <div class="card">
+            <img src="{{ img }}" class="card-img-top">
+            <div class="card-body">
+                <a href="#"><h5 class="card-title" style="text-align: center;" onclick="viewProduct('framesets', {{id}})">{{title}}</h5></a>
+                <p class="card-text" style="text-align: center;">S${{price}}</p>
+                <p class="card-text" style="text-align: center;">Available Sets: {{stock}}</p>
+                <p class="card-text" style="text-align: center; color:#cfcfcf;">{{productID}}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="card-columns" style="column-count: 2;" id="helmets">
+        {% for x in range(lengthHelmets) %} 
+        {% set img = helmets[x][4][0] %} 
+        {% set title = helmets[x][0] %} 
+        {% set price = helmets[x][2] %} 
+        {% set stock = helmets[x][3] %}
+        {% set productID = helmets[x][5] %}
+        {% set id = x %}
+        <div class="card">
+            <img src="{{ img }}" class="card-img-top">
+            <div class="card-body">
+                <a href="#"><h5 class="card-title" style="text-align: center;" onclick="viewProduct('helmets', {{id}})">{{title}}</h5></a>
+                <p class="card-text" style="text-align: center;">S${{price}}</p>
+                <p class="card-text" style="text-align: center;">Available Sets: {{stock}}</p>
+                <p class="card-text" style="text-align: center; color:#cfcfcf;">{{productID}}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="card-columns" style="column-count: 2;" id="saddles">
+        {% for x in range(lengthSaddles) %} 
+        {% set img = saddles[x][4][0] %} 
+        {% set title = saddles[x][0] %} 
+        {% set price = saddles[x][2] %} 
+        {% set stock = saddles[x][3] %}
+        {% set productID = saddles[x][5] %}
+        {% set id = x %}
+        <div class="card">
+            <img src="{{ img }}" class="card-img-top">
+            <div class="card-body">
+                <a href="#"><h5 class="card-title" style="text-align: center;" onclick="viewProduct('saddles', {{id}})">{{title}}</h5></a>
+                <p class="card-text" style="text-align: center;">S${{price}}</p>
+                <p class="card-text" style="text-align: center;">Available Sets: {{stock}}</p>
+                <p class="card-text" style="text-align: center; color:#cfcfcf;">{{productID}}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="card-columns" style="column-count: 2;" id="wheels">
+        {% for x in range(lengthWheels) %} 
+        {% set img = wheels[x][4][0] %} 
+        {% set title = wheels[x][0] %} 
+        {% set price = wheels[x][2] %} 
+        {% set stock = wheels[x][3] %}
+        {% set productID = wheels[x][5] %}
+        {% set id = x %}
+        <div class="card">
+            <img src="{{ img }}" class="card-img-top">
+            <div class="card-body">
+                <a href="#"><h5 class="card-title" style="text-align: center;" onclick="viewProduct('wheels', {{id}})">{{title}}</h5></a>
+                <p class="card-text" style="text-align: center;">S${{price}}</p>
+                <p class="card-text" style="text-align: center;">Available Sets: {{stock}}</p>
+                <p class="card-text" style="text-align: center; color:#cfcfcf;">{{productID}}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<script>
+
+var ori_framesets = document.getElementById('framesets').innerHTML
+var ori_helmets = document.getElementById('helmets').innerHTML
+var ori_saddles = document.getElementById('saddles').innerHTML
+var ori_wheels = document.getElementById('wheels').innerHTML
+
+function all_only() {
+	var framesets = document.getElementById('framesets')
+	var helmets = document.getElementById('helmets')
+	var saddles = document.getElementById('saddles')
+	var wheels = document.getElementById('wheels')
+	framesets.innerHTML = ori_framesets
+	helmets.innerHTML = ori_helmets
+	saddles.innerHTML = ori_saddles
+	wheels.innerHTML = ori_wheels
+}
+
+function framesets_only(){
+	var framesets = document.getElementById('framesets')
+	var helmets = document.getElementById('helmets')
+	var saddles = document.getElementById('saddles')
+	var wheels = document.getElementById('wheels')
+	framesets.innerHTML = ori_framesets
+	helmets.innerHTML = ""
+	saddles.innerHTML = ""
+	wheels.innerHTML = ""
+}
+
+function helmets_only(){
+	var framesets = document.getElementById('framesets')
+	var helmets = document.getElementById('helmets')
+	var saddles = document.getElementById('saddles')
+	var wheels = document.getElementById('wheels')
+	framesets.innerHTML = ""
+	helmets.innerHTML = ori_helmets
+	saddles.innerHTML = ""
+	wheels.innerHTML = ""
+}
+
+function saddles_only(){
+	var framesets = document.getElementById('framesets')
+	var helmets = document.getElementById('helmets')
+	var saddles = document.getElementById('saddles')
+	var wheels = document.getElementById('wheels')
+	framesets.innerHTML = ""
+	helmets.innerHTML = ""
+	saddles.innerHTML = ori_saddles
+	wheels.innerHTML = ""
+}
+
+function wheels_only(){
+	var framesets = document.getElementById('framesets')
+	var helmets = document.getElementById('helmets')
+	var saddles = document.getElementById('saddles')
+	var wheels = document.getElementById('wheels')
+	framesets.innerHTML = ""
+	helmets.innerHTML = ""
+	saddles.innerHTML = ""
+	wheels.innerHTML = ori_wheels
+}
+
+var mapping = {{ data | tojson }}
+
+function viewProduct(cat, id){
+    payload = mapping[cat][parseInt(id)]
+    sessionStorage.setItem('payload', JSON.stringify(payload))
+    window.location.href = "/viewProduct"
+}
+
+</script>
+
+{% endblock %}

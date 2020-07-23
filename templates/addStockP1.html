@@ -1,0 +1,65 @@
+{% extends "base.html" %} {% block title %}Specialized | Add Stocks{% endblock %} {% block content %}
+
+<div class="container">
+    <hr />
+    <h3>Adding stocks for <span style="text-decoration: underline;">{{productDetails[0]}}({{productID}})</span></h3>
+    <p>Currently have <b>{{productDetails[1]}}</b> amount of stocks.</p>
+
+    <div id="supplierSection">
+
+    </div>
+</div>
+
+<script>
+setTimeout(loadSuppliers, 500)
+function loadSuppliers(){
+    supplierSection = document.getElementById('supplierSection')
+    var suppliers = {{suppliers | safe}}
+    var supplierSectionInnerHTML = ""
+
+    if(suppliers.length != 0){
+        supplierSectionInnerHTML = supplierSectionInnerHTML.concat("<hr /><h4>Suppliers that carry this product:</h4><table class='table'><thead class='thead-dark'><th scope='col'>Supplier ID</th><th scope='col'>Supplier Name</th><th scope='col'>Stocks They Have</th><th scope='col'>Choose</th></thead><tbody>")
+        for (let i = 0; i < suppliers.length; i++) {
+            if(parseInt(suppliers[i][2]) == 0){
+                supplierSectionInnerHTML = supplierSectionInnerHTML.concat("<tr><td id='s_id_" + i + "'>" + suppliers[i][0] + "</td><td id='s_name_" + i + "'>" + suppliers[i][1] + "</td><td id='s_stock_" + i + "'>" + "<b>" + suppliers[i][2] + "</b>" + "</td><td><span style='text-decoration: underline; color: red; font-weight: bold;'>OUT OF STOCK</span></td></tr>")
+            }
+            else{
+                supplierSectionInnerHTML = supplierSectionInnerHTML.concat("<tr><td id='s_id_" + i + "'>" + suppliers[i][0] + "</td><td id='s_name_" + i + "'>" + suppliers[i][1] + "</td><td id='s_stock_" + i + "'>" + "<b>" + suppliers[i][2] + "</b>" + "</td><td><button class='btn btn-primary' onclick='addStock(" + i + ")'>Choose</button></td></tr>")
+            }
+        }
+        supplierSectionInnerHTML = supplierSectionInnerHTML.concat("</tbody></table>")
+        supplierSection.innerHTML = supplierSectionInnerHTML
+    }
+    else{
+        supplierSection.innerHTML = "<hr /><h5>:( There isn't any supplier that carry this product at the time being</h5>"
+    }
+}
+
+function addStock(i){
+    var supplierID = document.getElementById('s_id_' + i).innerText
+    var supplierStock = document.getElementById('s_stock_' + i).innerText
+
+    var new_stock = prompt("Enter stock amount: ")
+    new_stock = parseInt(new_stock)
+
+    $.getJSON({
+        url: "/addStockP2",
+        data: {
+            productID: '{{productID}}',
+            quantity: new_stock,
+            supplierID: supplierID
+        },
+        success: function(data) {
+        if(data.response == 200){
+            alert("Stock Updated!")
+            window.location.href="/adminCP"
+        }
+        else{
+            alert("Something went wrong!")
+        }
+        }
+    });
+}
+</script>
+
+{%endblock%}

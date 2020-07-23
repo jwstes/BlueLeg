@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Specialized | Update Feedback{% endblock %}
+{% block content %}
+{% from "includes/_formhelper.html" import render_field %}
+
+<div class="container">
+    <div class="innercontainer">
+        <h1 class="display-4">Update Feedback</h1>
+        <form method="POST" action="">
+        <div class="form-group">
+        {{ render_field(form.fullName, class="form-control", id="fullname") }}
+        </div>
+        <div class="form-group">
+        {{ render_field(form.userName, class="form-control", id="username") }}
+        </div>
+        <div class="form-group">
+        {{ render_field(form.email, class="form-control", id="email") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.message, class="form-control", id="message") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.status, class="form-control") }}
+        </div>
+        <input type="submit" value="Submit" class="btn btn-primary"/>
+        </form>
+    </div>
+</div>
+
+<script>
+document.getElementById('fullname').disabled = true
+document.getElementById('username').disabled = true
+document.getElementById('email').disabled = true
+document.getElementById('message').disabled = true
+</script>
+
+{% endblock %}

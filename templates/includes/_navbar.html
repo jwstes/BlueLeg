@@ -1,0 +1,126 @@
+<!-- NAVIGATION BAR -->
+
+<style>
+    #adminUsername {
+    background: -webkit-linear-gradient(#ee0979, #ff6a00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/">Speciailized</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/aboutUs">About Us</a>
+            </li>
+            <li class="nav-item" id="registerLi">
+                <a class="nav-link" href="/register">Register</a>
+            </li>
+            <li class="nav-item" id="loginLi">
+                <a class="nav-link" href="/login">Login</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/store">Shop</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link"  id="feedbackLink"></a>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+            <!-- Button trigger modal -->
+            <button type="button" style="background-color: rgba(1,1,1,0.0); border: none;" class="" data-toggle="modal" data-target="#exampleModal" id="userButton">
+
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel"></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <button type="button" class="btn btn-primary" onclick="window.location.href = '/cart'">View Full Cart</button>
+                            <button type="button" class="btn btn-primary" id="trackOrderBtn">Track Order</button>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="logout();">Logout</button>
+                            <button type="button" class="btn btn-primary" id="myaccountbtn" onclick="window.location.href = '/myAccount'">My Account</button>
+                            <button type="button" id="adminCP" class="btn btn-warning" onclick="window.location.href = '/adminCP'">AdminCP</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</nav>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+<script>
+    var _GLOBAL_USERNAME = ""
+    var _GLOBAL_RIGHTS = ""
+
+    $(document).ready(function() {
+
+        var typeCheckURLInfo = "get_user_info";
+
+        $.getJSON({
+            url: "/checkUser",
+            data: {
+                option: typeCheckURLInfo
+            },
+            success: function(data) {
+                if (data.username != "nothing") {
+                    _GLOBAL_USERNAME = data.username
+                    _GLOBAL_RIGHTS = data.rights
+
+                    var modal = document.getElementById('userButton');
+                    modal.innerText = data.username;
+                    modal.setAttribute('class', 'btn btn-primary');
+                    modal.setAttribute('style', '');
+                    document.getElementById('loginLi').innerHTML = "";
+                    document.getElementById('registerLi').innerHTML = "";
+                    document.getElementById('trackOrderBtn').setAttribute('onclick', 'window.location.href = "/trackOrderPage/' + _GLOBAL_USERNAME + '"')
+                    document.getElementById('feedbackLink').setAttribute('href', '/feedback/' + _GLOBAL_USERNAME)
+                    document.getElementById('feedbackLink').innerText = "Feedback"
+                    if (data.rights == "True") {
+                        document.getElementById('adminCP').style.display = "block"
+                        document.getElementById('myaccountbtn').style.display = "none"
+                        document.getElementById('exampleModalLabel').innerHTML = "My Account (<span id='adminUsername' style='font-weight: bold'>" + _GLOBAL_USERNAME +"</span>)"
+                    } else {
+                        document.getElementById('adminCP').style.display = "none"
+                        document.getElementById('exampleModalLabel').innerText = "My Account (" + _GLOBAL_USERNAME +")"
+                    }
+                }
+            }
+        });
+    });
+
+    function logout(){
+        var logoutData = "logout";
+
+        $.getJSON({
+            url: "/checkUser",
+            data: {
+                option: logoutData
+            },
+            success: function(data) {
+                alert("Logged Out!")
+            }
+        });
+        window.location.href = "/"
+    }
+</script>
+<!-- END OF NAVIGATION BAR -->

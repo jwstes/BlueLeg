@@ -1,0 +1,410 @@
+{% extends "base.html" %} {% block title %}Specialized | Admin Control Panel {% endblock %} {% block content %}
+
+<div class="container">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="profile-tab" data-toggle="tab" href="#siteUsers" role="tab" aria-controls="profile" aria-selected="false">Site Users</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="contact-tab" data-toggle="tab" href="#siteProducts" role="tab" aria-controls="contact" aria-selected="false">Site Products</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="supplier-tab" data-toggle="tab" href="#supplier" role="tab" aria-controls="contact" aria-selected="false">Suppliers</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="transaction-tab" data-toggle="tab" href="#siteTransactions" role="tab" aria-selected="false">Site Transactions</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="reward-tab" data-toggle="tab" href="#rewardsTab" role="tab" aria-selected="false">View Rewards</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="report-tab" data-toggle="tab" href="#viewReports" role="tab" aria-selected="false">View Reports</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="feedback-tab" data-toggle="tab" href="#viewFeedbacks" role="tab" aria-selected="false">View Feedbacks</a>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="home" role="tabpanel" ><h2 id="op"></h2></div>
+        <div class="tab-pane fade" id="siteUsers" role="tabpanel" >
+            <table class="table">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Points</th>
+                    <th scope="col">Delete User</th>
+                    <th scope="col">Edit</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {%for i in range(0, lenOfUsers)%} 
+                    <tr>
+                        <td><p style="font-weight: bold;">{{users[i][0]}}</p></td>
+                        <td><p>{{users[i][1]}}</p></td>
+                        <td><p>{{users[i][2]}}</p></td>
+                        <td><button class="btn btn-danger" onclick="delUser('{{users[i][0]}}')">X</button></td>
+                        <td><button class="btn btn-primary" onclick=" window.location.href = '/editUser/{{users[i][0]}}'">Edit</button></td>
+                    </tr>
+                {%endfor%} 
+                </tbody>
+              </table>
+        </div>
+        <div class="tab-pane fade" id="siteProducts" role="tabpanel" >
+            <table class="table">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Image</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Stock</th>
+                    <th scope="col">Misc</th>
+                  </tr>
+                  <tr>
+                    <td>
+                      <button class="btn btn-primary" onclick="window.location.href = '/addProduct'">Add New Product</button>
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                {%for i in range(0, lenOfProducts)%}
+                  {% if products[i][4] < 50 %}
+                    <tr style="background-color: #c72020; color: white;">
+                      <td><p style="font-weight: bold;">{{products[i][0]}}</p></td>
+                      <td><img src="{{products[i][1]}}" width="150px"></td>
+                      <td><p>{{products[i][2]}}</p><p><b style="text-decoration: underline;">LOW STOCK</b></p></td>
+                      <td><p>S${{products[i][3]}}</p></td>
+                      <td><p><b>{{products[i][4]}}</b></p></td>
+                      <td>
+                        <button class="btn btn-primary" onclick="product_change_stock('{{products[i][0]}}')">Change Stock</button>
+                        <button class="btn btn-danger" onclick="window.location.href = '/delProduct/{{products[i][0]}}'">X</button>
+                      </td>
+                  </tr>
+                  {% else %}
+                      <tr>
+                        <td><p style="font-weight: bold;">{{products[i][0]}}</p></td>
+                        <td><img src="{{products[i][1]}}" width="150px"></td>
+                        <td><p>{{products[i][2]}}</p></td>
+                        <td><p>S${{products[i][3]}}</p></td>
+                        <td><p>{{products[i][4]}}</p></td>
+                        <td>
+                          <button class="btn btn-primary" onclick="product_change_stock('{{products[i][0]}}')">Change Stock</button>
+                          <button class="btn btn-danger" onclick="window.location.href = '/delProduct/{{products[i][0]}}'">X</button>
+                        </td>
+                    </tr>
+                  {% endif %}
+                    
+                {%endfor%}
+                </tbody>
+              </table>
+        </div>
+        <div class="tab-pane fade" id="supplier" role="tabpanel" >
+          <table class="table">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Items Stock</th>
+                <th scope="col">Edit Stock</th>
+                <th scope="col">Delete Supplier</th>
+              </tr>
+              <tr>
+                <td>
+                  <button class="btn btn-primary" onclick="window.location.href = '/addSupplier'">Add Supplier</button>
+                </td>
+              </tr>
+            </thead>
+            <tbody id="supplierTable">
+
+            </tbody>
+          </table>
+      </div>
+        <div class="tab-pane fade" id="siteTransactions" role="tabpanel">
+            <hr />
+            <button class='btn btn-primary' onclick="window.location.href = '/manageTransactions'">Manage Transactions</button>
+            <hr />
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">User ID</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Number of Purchases</th>
+                  </tr>
+                </thead>
+                <tbody id="transactions_table_body">
+                  
+                </tbody>
+              </table>
+            
+            <div id="infoDump">
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-hidden="true">
+                    
+                  </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="rewardsTab" role="tabpanel">
+          <hr />
+          <button class='btn btn-primary' onclick="window.location.href = '/createReward'">Create New Rewards</button>
+          <hr />
+            <table class="table table-striped">
+                   <thead>
+               <tr>
+               <th>Reward ID</th>
+               <th>Reward Name</th>
+               <th>Reward Incentive (S$ Off)</th>
+               <th>Points Required</th>
+               <th>Quantity</th>
+               <th></th>
+               <th></th>
+               </tr>
+               </thead>
+               <tbody>
+               {% for reward in rewardsList %}
+               <tr>
+               <td>{{reward.get_rewardID()}}</td>
+               <td>{{reward.get_rewardName()}}</td>
+               <td>{{reward.get_incentive()}}</td>
+               <td>{{reward.get_points()}}</td>
+               <td>{{reward.get_quantity()}}</td>
+               <td><a href="/updateReward/{{reward.get_rewardID()}}" class="btn btn-warning">Update</a></td>
+               <td>
+              <form action="{{url_for('deleteReward', id=reward.get_rewardID())}}" method="POST">
+              <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this reward?');">
+              </form>
+               </td>
+               </tr>
+               {% endfor %}
+               </tbody>
+           </table>
+
+      </div>
+
+        <div class="tab-pane fade" id="viewReports" role="tabpanel">
+          <div style="text-align:center;margin-left:auto;margin-right:auto;">
+            <h1>Sales Report</h1>
+            <h2>Overview</h2>
+              <br><br>
+            <h4>
+                <table style="text-align:center;">
+                    <tr>
+                        <th>Total Average Purchase Price :</th>
+                        <td>$</td>
+                        <td>{{'%0.2f'|format(average|float)}}</td>
+                    </tr>
+                    <tr>
+                        <th>Total Amount Earned :</th>
+                        <td>$</td>
+                        <td>{{'%0.2f'|format(revenue|float)}}</td>
+                    </tr>
+                    <tr>
+                        <th>Today's Revenue :</th>
+                        <td>$</td>
+                        <td>{{'%0.2f'|format(daily|float)}}</td>
+                    </tr>
+                    <tr>
+                        <th>This Month's Revenue :</th>
+                        <td>$</td>
+                        <td>{{'%0.2f'|format(monthly|float)}}</td>
+                    </tr>
+                    <tr>
+                        <th>This Year's Revenue :</th>
+                        <td>$</td>
+                        <td>{{'%0.2f'|format(yearly|float)}}</td>
+                    </tr>
+                    <tr>
+                        <th>Last Year's Revenue :</th>
+                        <td>$</td>
+                        <td>{{'%0.2f'|format(pastYearly|float)}}</td>
+                    </tr>
+                    <tr>
+                        <th>Comparison (This vs Last Year) :</th>
+                        <td>$</td>
+                        <td><span id="comparison">{{'%0.2f'|format(compareYears|float)}}</span></td>
+                    </tr>
+                </table>
+                <br>
+                <button><a href="/line">View Linegraph</a></button>
+            </h4>
+          </div>
+            <div style="text-align:center;margin-left:auto;margin-right:auto;">
+                <hr>
+            <h1>Rewards Report</h1>
+            <h2>Overview</h2>
+                <br><br>
+            <h4>
+                <table style="text-align:center;">
+                    <tr>
+                        <tr>
+                        <th>Most Popular Item :</th>
+                        <td></td>
+                        <td>{{topReward[0]}} with {{topReward[1]}} items exchanged</td>
+                        </tr>
+                        <th>User With The Most Exchanges :</th>
+                        <td></td>
+                        <td>{{topUser[0]}} with {{topUser[1]}} exchanges</td>
+                    </tr>
+                    <tr>
+                        <th>Total Average Number Of Exchanges :</th>
+                        <td></td>
+                        <td>{{'%0.2f'|format(averageExchange|float)}}</td>
+                    </tr>
+                </table>
+                <br>
+                <button><a href="/pie">View Piechart</a></button>
+            </h4>
+          </div>
+        </div>
+
+        <div class="tab-pane fade" id="viewFeedbacks" role="tabpanel">
+          <hr />
+          {%for mem in feedbacks%}
+            <h4>{{feedback_usernames[mem]}}</h4>
+            <table class='table'>
+              <thead>
+                <tr>
+                  <th scope='col'>Feedback ID</th>
+                  <th scope='col'>Message</th>
+                  <th scope='col'>Status</th>
+                  <th scope='col'>Update Status</th>
+                  <th scope='col'>Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+            {%for x in feedbacks[mem]%}
+              <tr>
+                <td>{{feedbacks[mem][x].get_feedbackID()}}</td>
+                <td><b>{{feedbacks[mem][x].get_message()}}</b></td>
+                <td><b>{{feedbacks[mem][x].get_status()}}</b></td>
+                <td><button class="btn btn-primary"><a href='/updateFeedbackStatus/{{feedbacks[mem][x].get_feedbackID()}}&{{mem}}' style='color: white; text-decoration: none;'>Update Status</a></button></td>
+                <td><button class="btn btn-danger"><a href='/deleteFeedback/{{feedbacks[mem][x].get_feedbackID()}}&{{mem}}' style='color: white; text-decoration: none;'>Delete Feedback</a></button></td>
+              </tr>
+            {%endfor%}
+            </tbody>
+            </table>
+          {%endfor%}
+
+        </div>
+        
+      </div>
+</div>
+
+<script>
+setTimeout(checkUser, 500)
+setTimeout(displayName, 500)
+setTimeout(getSuppliers, 500)
+function checkUser(){
+    if(_GLOBAL_RIGHTS == "False"){
+        alert("YOU FOUND NOTHING!")
+        window.location.href = "/"
+    }
+}
+function displayName() {
+    document.getElementById('op').innerText = "Hi " + _GLOBAL_USERNAME + "!"
+}
+
+
+var transactions = {{ be_transactions | tojson }}
+var userIDs = {{ be_userIDs | safe }}
+var userNames = {{ be_userNames | safe }}
+
+var table_body = document.getElementById('transactions_table_body')
+var infoDump = document.getElementById('infoDump')
+
+for (let i = 0; i < userIDs.length; i++) { //FOR EVERY MEMBER
+    var infoDumpBody = document.createElement('div')
+    infoDumpBody.setAttribute('class', 'modal fade')
+    infoDumpBody.setAttribute('id', userIDs[i])
+    infoDumpBody.setAttribute('tabindex', '-1')
+    infoDumpBody.setAttribute('aria-hidden', 'true')
+    infoDumpBody.setAttribute('role', 'dialog')
+
+    var infoDumpBodyText = ""
+    var tr = document.createElement('tr')
+    var trInner = "<td><button type='button' class='btn btn-primary' data-toggle='modal' data-target='#" + userIDs[i] + "'> " + userIDs[i] + " </button></td> <td>" + userNames[i] + "</td> <td>" + transactions[userIDs[i]].length + "</td>"
+    for (let u = 0; u < transactions[userIDs[i]].length; u++){
+        date = transactions[userIDs[i]][u][0][0] + "-" + transactions[userIDs[i]][u][0][1] + "-" + transactions[userIDs[i]][u][0][2]
+        transactionID = transactions[userIDs[i]][u][2]
+        pointsEarned = transactions[userIDs[i]][u][3]
+        t_totalPrice = transactions[userIDs[i]][u][4]
+        infoDumpBodyText = infoDumpBodyText.concat("<span style='text-decoration: underline; font-weight: bold;'>" + transactionID + "</span>" + " (" + date + ")" + "<table class='table'><thead><tr><th scope='col'>Title</th><th scope='col'>Quantity</th></tr></thead><tbody>")
+        for(let y = 0; y < transactions[userIDs[i]][u][1].length; y++){
+            infoDumpBodyText = infoDumpBodyText.concat("<tr><td>" + transactions[userIDs[i]][u][1][y][0] + "</td> <td>" + transactions[userIDs[i]][u][1][y][1] + "</td>")
+        }
+        infoDumpBodyText = infoDumpBodyText.concat("</tr><tr style='text-align: right;'><td colspan='2'><b>Total Price</b>: S$" + t_totalPrice +"</td></tr><tr style='text-align: right;'><td colspan='2'><b>Points Earned</b>: " + pointsEarned + "</td></tr></tbody></table><hr />")
+    }
+    
+    infoDumpBody.innerHTML = "<div class='modal-dialog' role='document'><div class='modal-content'><div class='modal-header'><h5 class='modal-title' id='exampleModalLabel'>Transaction History</h5><button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button></div><div class='modal-body'>" + infoDumpBodyText + "</div></div></div>"
+    tr.innerHTML = trInner
+    table_body.appendChild(tr)
+    infoDump.appendChild(infoDumpBody)
+}
+
+
+function product_change_stock(product_id){
+  window.location.href = "/addStockP1/" + product_id
+}
+
+function delUser(userID){
+  $.getJSON({
+    url: "/delUser",
+      data: {
+          userID: userID
+      },
+    success: function(data) {
+      if(data.response == 200){
+        window.location.reload()
+      }
+      else{
+        alert("Something went wrong!")
+      }
+    }
+  });
+}
+
+function editUser(userID){
+  console.log(userID)
+}
+
+function getSuppliers(){
+  $.getJSON({
+    url: "/getSupplier",
+      data: {
+          req: 1
+      },
+    success: function(data) {
+      if(data.response == 200){
+        var supplierTable = document.getElementById('supplierTable')
+        var supplierTableHTML = ""
+        const supplierKeys = Object.keys(data.suppliers);
+
+        for (let i = 0; i < supplierKeys.length; i++) {
+          const supplierItemKeys = Object.keys(data.suppliers[supplierKeys[i]][1]);
+
+          supplierTableHTML = supplierTableHTML.concat("<tr><td><b>" + supplierKeys[i] + "</b></td><td>" + data.suppliers[supplierKeys[i]][0] + "</td><td><ul>")
+
+          for (let x = 0; x < supplierItemKeys.length; x++) {
+            supplierTableHTML = supplierTableHTML.concat("<li>" + supplierItemKeys[x] + " (Stock: " + data.suppliers[supplierKeys[i]][1][supplierItemKeys[x]]  + ") </li>")
+          }
+          supplierTableHTML = supplierTableHTML.concat("</ul></td>")
+          supplierTableHTML = supplierTableHTML.concat("<td><button class='btn btn-primary'><a href='/addSupplierStocks/" + supplierKeys[i] + "' style='color: white; text-decoration: none;'>Edit Stocks</a></button></td><td><button class='btn btn-danger'><a href='/deleteSupplier/" + supplierKeys[i] + "' style='color: white; text-decoration: none;'>Delete Supplier</a></button></td></tr>")
+        }
+
+        supplierTable.innerHTML = supplierTableHTML
+
+      }
+      else{
+        alert("Something went wrong!")
+      }
+    }
+  });
+}
+
+</script>
+
+
+{% endblock %}
